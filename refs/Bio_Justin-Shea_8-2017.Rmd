@@ -1,0 +1,23 @@
+---
+title: "Justin M. Shea"
+author: "2017 American Dream Conference Biography"
+output: 
+  pdf_document: 
+    latex_engine: xelatex
+header-includes: \usepackage{color}
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+Justin is a Data Scientist with [\textcolor{blue}{HumanPredictions.io}](https://www.humanpredictions.io/), a tech recruiting app which prioritizes prospects based on real-time data. Justin builds statistical and machine learning models to gain microeconomic insights about the tech labor force from raw, unstructured, publicly available data. He is also an Economics adjunct faculty at Roosevelt University as well as a Mentor TA for The Johns Hopkins University Data Science specialization on Coursera. 
+
+In addition, Justin is an organizer for the [\textcolor{blue}{Chicago R User group}](https://www.meetup.com/ChicagoRUG/), one of the largest Data Science meetup groups in Chicago, and a contributor to open source statistical software projects.
+
+Before his involvement in Data Science, most of Justin's career was in the commodity futures trading industry. Working part-time as a teenager, he began as a runner at the Chicago Mercantile Exchange and steadily advanced his career, eventually becoming a Portfolio Manager and Quantitative Research Analyst responsible for managing portfolios of multiple futures and options trading strategies.
+
+Justin earned his Master's in Economics from Roosevelt University in 2014. He also received a Bachelor's in Professional Studies from Roosevelt, with a concentration in Finance. As one of the first Chicagoland Universities to accommodate working students, Justin discovered Roosevelt to receive a quality education while pursuing a full-time career. A lifelong learner, he continues to pursue educational opportunities in today's rapdily evolving technology landscape.
