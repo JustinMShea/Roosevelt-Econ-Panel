@@ -35,3 +35,9 @@ to beleive it!"
 ## Final ideas
 
 Recreate Mason's output gap.
+
+https://www.theguardian.com/news/2017/jul/11/how-economics-became-a-religion
+
+Talk about moving toward a data driven discipline.
+
+
