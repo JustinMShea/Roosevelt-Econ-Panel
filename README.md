@@ -1,13 +1,12 @@
 # Roosevelt Economic Justice and the American Dream 
 
+
+## Initial ideas in may
 My talk will be data driven.
 
 Interesting things to exam:
-
 Buffets claim: corporate tax vs health care costs (2% vs 17% of GDP)
-
 Raising the floor: jobs outsourced by automation
-
 Home ownership percentage decline, nyt article.
 
 
@@ -23,13 +22,16 @@ Home ownership has dropped as well. Chart of that.
 
 Fiscal policy could help, but corporate american could help too.
 Instead, they've grown profits largley by reducing costs and buying back shares.
-Look at Janis work, show some charts again of corporate activity and why pointing to
-the stock market is not quite the right statistic.
+Look at Janis work, show some charts again of corporate activity and why pointing to the stock market is not quite the right statistic.
 
-Also, GDP, while is up overall, its based on the price and quanitty of those good,
-not based on the quality. In fact, it doesn not consider quality at all.
+Also, GDP, while is up overall, its based on the price and quanitty of those good, not based on the quality. In fact, it doesn not consider quality at all.
 
 Higher education is still a path to achieving the American Dream.
 Of these, technology is growing very fast. shows some charts here.
 
+George Carlin: "It's called the American Dream...becuase you have to be asleep..
+to beleive it!"
 
+## Final ideas
+
+Recreate Mason's output gap.
