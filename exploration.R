@@ -1,12 +1,3 @@
-
-# Data
-Real_GDP_URL <- "https://research.stlouisfed.org/fred2/data/GDPC96.txt"
-
-### Download directly from FRED into xts time series object 
-library(xts)
-Real_GDP <- as.xts(read.zoo(Real_GDP_URL, skip = 12, index.column = 1, 
-                        header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
-
 library(forecast)
 library(ggplot2)
 lm_gdp <- tslm(Real_GDP)
@@ -25,4 +16,4 @@ tbats_GDP %>% forecast(h = 40) %>% autoplot()
 
 library(ggplot2)
 arima_GDP %>% forecast(h = 40) %>% autoplot(type="ar") +
-geom_line(aes(y=coredata(Real_GDP))) + theme_bw()
+  geom_line(aes(y=coredata(Real_GDP))) + theme_bw()
