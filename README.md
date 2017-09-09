@@ -29,8 +29,7 @@ Also, GDP, while is up overall, its based on the price and quanitty of those goo
 Higher education is still a path to achieving the American Dream.
 Of these, technology is growing very fast. shows some charts here.
 
-George Carlin: "It's called the American Dream...becuase you have to be asleep..
-to beleive it!"
+George Carlin: "It's called the American Dream...becuase you have to be asleep...to beleive it!"
 
 ## Final ideas
 
@@ -39,5 +38,23 @@ Recreate Mason's output gap.
 https://www.theguardian.com/news/2017/jul/11/how-economics-became-a-religion
 
 Talk about moving toward a data driven discipline.
+
+
+# More final idea
+
+Make it about output gap, and minimum wage.
+Minimum wage is too low. The research is out there.
+
+The output gap is too wide and many people don't have jobs.
+Government spending is down. Corporate spending is down. Inflation is lower than the FEDS target. 
+
+Raising minimum wage could put more people to work and give them money to spend. Remember, one persons spending is another persons income!
+Studies pointing to people in lower income brackets spending their new gains immediatly on necessities.
+
+
+
+
+
+
 
 
