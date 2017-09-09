@@ -23,6 +23,11 @@ View(HL_GDP)
 plot(HL_GDP$HL_fit, col = "red", grid.col = "white")
 lines(HL_GDP$x_h, col = "black")
 
+plot(HL_GDP$HL_fit["1984/"], col = "red", grid.col = "white")
+lines(HL_GDP$x_h["1984/"], col = "black")
+
+
+
 # plot resid
 plot(HL_GDP$HL_resid["1956/"], index(employ_hlf), col = "black", grid.col = "white")
 abline(v = .index(HL_GDP["2001"])[1], lty = 2, col = "green")
