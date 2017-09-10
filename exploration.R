@@ -45,6 +45,11 @@ max(Hlm_GDP$residuals)
 
 
 ## Card and Krueger
-install.packages("woodlridge")
 library(wooldridge)
 data("discrim")
+
+str(discrim)
+lm(discrim$emp ~ discrim$wagest)
+plot(x=discrim$emp, y = discrim$wagest)
+
+
