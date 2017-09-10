@@ -15,10 +15,10 @@ tbats_GDP %>% forecast(h = 40) %>% autoplot()
 
 
 # Hamilton Leff
-Hlm_GDP <- HLfilter.lm(Real_GDP["/2007"], h=80)
-
-HL_GDP <- HLfilter(100*log(Real_GDP), h=40)
+Hlm_GDP <- HLfilter.lm(Real_GDP["/2007"], h = 80)
+HL_GDP <- HLfilter(100*log(Real_GDP), h = 36)
 View(HL_GDP)
+
 # plot GDP
 plot(HL_GDP$HL_fit, col = "red", grid.col = "white")
 lines(HL_GDP$x_h, col = "black")
