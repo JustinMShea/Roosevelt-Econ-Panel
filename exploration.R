@@ -44,3 +44,7 @@ abline(v = .index(HL_GDP["2009"])[1], lty = 2, col = "darkgreen")
 max(Hlm_GDP$residuals)
 
 
+## Card and Krueger
+install.packages("woodlridge")
+library(wooldridge)
+data("discrim")
