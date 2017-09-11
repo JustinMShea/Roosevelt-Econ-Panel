@@ -43,13 +43,30 @@ Talk about moving toward a data driven discipline.
 # More final idea
 
 Make it about output gap, and minimum wage.
-Minimum wage is too low. The research is out there.
+Minimum wage is too low. The research is out there, Card and Krueger, etc.
 
 The output gap is too wide and many people don't have jobs.
-Government spending is down. Corporate spending is down. Inflation is lower than the FEDS target. 
+Government spending is down. Corporate spending is down. Inflation is lower than the FEDS target.
 
 Raising minimum wage could put more people to work and give them money to spend. Remember, one persons spending is another persons income!
 Studies pointing to people in lower income brackets spending their new gains immediatly on necessities.
+
+# The Economy is suffering from a lack of Demand...raising the minimum wage could get us up to speed
+
+There is a lot of propaganda about how the economy works these days. Using data to cut through the fog it creates, I find that our economy is suffering from a terrible lack of demand. This has widespread social and economic implications that impact the entire country, from the city to the country. 
+
+
+Close with father Joshua's call to humility and having the courage to open source work. Let your critics find its flaws. Let your friends, mentors, or complete strangers download your repository and contribute to the work.
+
+
+
+
+
+
+
+
+
+
 
 
 
