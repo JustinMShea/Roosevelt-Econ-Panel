@@ -66,3 +66,14 @@ ggplot(data=discrim, aes(y=emp2, x=wagest2)) +
 
 sum(discrim$emp, na.rm=TRUE)
 sum(discrim$emp2, na.rm=TRUE)
+
+
+## various ages of participation
+library(ggplot2)
+ggplot(employment_wide, aes(x=date)) +
+        geom_line(aes(y=LNS11324230)) +
+        geom_line(aes(y=employment_ages_api[2])) +
+        geom_line(aes(y=employment_ages_api[3])) +
+        geom_line(aes(y=employment_ages_api[4])) +
+        geom_line(aes(y=employment_ages_api[5])) +
+        labs(title = "Employment Level - Civ. Labor Force")
