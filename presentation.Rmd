@@ -1,5 +1,5 @@
 ---
-title: "Unemployment too high? Raise the minimum wage!"
+title: "Labor Force Participation"
 author: "Justin M. Shea"
 date: "September 12, 2017"
 output: beamer_presentation
@@ -18,7 +18,7 @@ source("functions.R")
 
 ## Introduction
 
-The percentage of people participation in the labor force remains depressed since the Great Recession. So too, does aggregate demand...
+The percentage of people participating in the labor force remains depressed since the Great Recession. So too, does aggregate demand.
 
 ## Unemployment, headline percentage looks fine
 
