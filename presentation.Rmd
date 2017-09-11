@@ -11,6 +11,9 @@ library(knitr)
 library(rmarkdown)
 library(xts)
 library(ggplot2)
+library(blscrapeR)
+library(tidyr)
+library(ggthemes)
 library(tufte)
 
 source("functions.R")
@@ -47,6 +50,32 @@ autoplot(labor_participation["1980/"]) + theme_bw()
 
 ```
 
+## The labor participation rate, by age
+
+```{r}
+#bls data by ages
+library(blscrapeR)
+library(tidyr)
+library(tufte)
+
+employment_series <- c("LNS11324230", "LNS11300093", "LNS11300091", "LNS11300089", "LNS11324887" )
+
+labels <- c("55 and over", "45 to 55", "35 to 44", "25 to 34", "16 to 24")
+
+employment_ages <- bls_api(employment_series, startyear = 2000, endyear = 2017, registrationKey = Sys.getenv("BLS_KEY")) %>% 
+        dateCast()
+
+employment_wide <- employment_ages %>% spread(seriesID, value)
+
+  ggplot(employment_wide, aes(x=date)) +
+        geom_line(aes(y=LNS11324230)) +
+        geom_line(aes(y=LNS11300093)) +
+        geom_line(aes(y=LNS11300091)) +
+        geom_line(aes(y=LNS11300089)) +
+        geom_line(aes(y=LNS11324887)) +
+        theme_bw()
+
+```
 
 ## Output gap
 
@@ -171,7 +200,76 @@ autoplot(Federal_GDP_percent["1980/"]) +
 ```
 
 
-## What about the Stock Market? A mirage...
+## Corporate Profits, Percentage of Real GDP
+
+
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Real Federal Consumption Expenditure: Percentage of Real GDP"}
+
+GDP_nom <- "https://fred.stlouisfed.org/data/GDP.txt"
+GDP          <- as.xts(read.zoo(GDP_nom, skip = 19, index.column = 1, header = TRUE, 
+                       format = "%Y-%m-%d", FUN = as.yearqtr))
+
+
+### Income Savings ###
+Corporate_Profits_After_Tax <- "https://fred.stlouisfed.org/data/CP.txt"
+Corporate_Net_Cash_Flow     <- "https://fred.stlouisfed.org/data/CNCF.txt"
+
+### Download 
+
+Corporate_Profits   <-  as.xts(read.zoo(Corporate_Profits_After_Tax, sep = "", skip = 10, 
+                           index.column = 1,  header = TRUE, format = "%Y-%m-%d", 
+                           FUN = as.yearqtr))
+Corporate_Cash_Flow <-  as.xts(read.zoo(Corporate_Net_Cash_Flow, sep = "", skip = 13, 
+                           index.column = 1,  header = TRUE, format = "%Y-%m-%d", 
+                           FUN = as.yearqtr))     
+
+Corporate_GDP_percent <- 100 * (Corporate_Profits/GDP)
+
+autoplot(Corporate_GDP_percent["2000/"]) +
+        ylab("Corporate Profits, % GDP") +
+        xlab("Year") +
+        scale_y_continuous(position = "right") +
+        geom_vline(xintercept = c(2002, 2010)) +
+        theme_bw()
+```
+
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Real Federal Consumption Expenditure: Percentage of Real GDP"}
+
+Corporate_Net_Cash_Flow     <- "https://fred.stlouisfed.org/data/CNCF.txt"
+
+
+Corporate_Cash_Flow <-  as.xts(read.zoo(Corporate_Net_Cash_Flow, sep = "", skip = 13, 
+                           index.column = 1,  header = TRUE, format = "%Y-%m-%d", 
+                           FUN = as.yearqtr))     
+
+Corp_Cash_GDP_percent <- 100 * (Corporate_Profits/Corporate_Cash_Flow)
+
+autoplot(Corp_Cash_GDP_percent["1982/"]) +
+        ylab("Corporate Profits, % of Corporate Cash Flow") +
+        xlab("Year") +
+        scale_y_continuous(position = "right") +
+        geom_vline(xintercept = c(1990, 1994, 2002, 2010)) +
+        theme_bw()
+
+```
+
+```{r}
+
+library(Quandl)
+SP500_Sales <- Quandl("MULTPL/SP500_REAL_SALES_YEAR", type="xts")
+SP500_Earnings <- Quandl("MULTPL/SP500_EARNINGS_YEAR", type="xts")
+
+SP500_Profit <- 100 * (SP500_Earnings-SP500_Sales)
+
+autoplot(SP500_Sales) +
+        ylab("S&P 500 Sales Per share") +
+        xlab("Year") +
+        scale_y_continuous(position = "right") +
+        geom_vline(xintercept = c(2002, 2010)) +
+        theme_bw()
+```
+
+## Productivity
 
 
 
@@ -195,7 +293,6 @@ ggplot(data=discrim, aes(y=emp2, x=wagest2)) +
         geom_point() +
         facet_grid(. ~ state) +
         geom_smooth(method = "lm")
-
 
 ```
 
