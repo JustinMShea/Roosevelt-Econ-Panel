@@ -13,6 +13,18 @@ labor_participation_url <- "https://fred.stlouisfed.org/data/CIVPART.txt"
 
 civilian_employment_url <- "https://fred.stlouisfed.org/data/CE16OV.txt"
 
+#bls data by ages
+library(blscrapeR)
+library(tidyr)
+api <- "dfc9f26b6f0c4e849169c98182b75781"
+set_bls_key(api)
+
+employment_series <- c("LNS11324230", "LNS11300093", "LNS11300091", "LNS11300089", "LNS11324887" )
+
+employment_ages <- bls_api(employment_series, registrationKey = Sys.getenv("BLS_KEY")) %>% 
+        dateCast()
+
+employment_wide <- employment_ages %>% spread(seriesID, value)
 
 # Government Spending
 
