@@ -39,3 +39,26 @@ HLfilter <- function(x, h = 8) {
         merge(DF$x_h, DF$x_h-DF$x, HL_fit, HL_resid)
         
 }
+
+
+#Fisher Real Index computation
+Fisher <- function(component, price, quantity, base  = 249) {
+        ## component= component series
+        ## price = price index, 
+        ## quantity  = quantity index 
+        ## base  = base period of objects. ie 249 for Q1 2009, per standard FED.
+        
+        require(micEconIndex)
+        require(xts)
+        ## Merge Price and Quantity XTS objects
+        QP <- merge(price, quantity)
+        ## Extract data frame for using priceIndex function
+        f_QP <- data.frame(coredata(QP))
+        colnames(f_QP) <- c("PRICE","QUANTITY")
+        ## Now, call priceIndex() and set the method to "Fisher". ##
+        
+        Fisher_index <- priceIndex("PRICE", "QUANTITY", base = base, data = f_QP, method = "Fisher")
+        # Calculate Real 
+        Real <- merge(component/Fisher_index)
+        return(Real)
+}
