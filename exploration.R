@@ -4,7 +4,6 @@ library(forecast)
 library(ggplot2)
 
 #forecast package
-lm_gdp <- tslm(Real_GDP)
 arima_GDP <- auto.arima(Real_GDP["/2007"])
 tbats_GDP <- tbats(log(Real_GDP["/2007"]))
 
@@ -15,6 +14,11 @@ tbats_GDP %>% forecast(h = 40) %>% autoplot()
 
 
 # Hamilton Leff
+
+HL_GDP_actual <- HLfilter(Real_GDP, h = 36)
+sum(HL_GDP_actual["2017"]$HL_resid) / sum(HL_GDP_actual["2017"]$x_h)
+
+# log real gdp for plots
 Hlm_GDP <- HLfilter.lm(Real_GDP["/2007"], h = 80)
 HL_GDP <- HLfilter(100*log(Real_GDP), h = 36)
 View(HL_GDP)
@@ -25,7 +29,6 @@ lines(HL_GDP$x_h, col = "black")
 
 plot(HL_GDP$HL_fit["1984/"], col = "red", grid.col = "white")
 lines(HL_GDP$x_h["1984/"], col = "black")
-
 
 
 # plot resid
@@ -47,9 +50,19 @@ max(Hlm_GDP$residuals)
 ## Card and Krueger
 library(wooldridge)
 data("discrim")
-
 str(discrim)
+
 lm(discrim$emp ~ discrim$wagest)
 plot(x=discrim$emp, y = discrim$wagest)
 
+ggplot(data=discrim, aes(x=emp, y=wagest)) + 
+        geom_point() +
+        geom_smooth(method = "lm")
 
+ggplot(data=discrim, aes(y=emp2, x=wagest2)) + 
+        geom_point() +
+        facet_grid(. ~ state) +
+        geom_smooth(method = "lm")
+
+sum(discrim$emp, na.rm=TRUE)
+sum(discrim$emp2, na.rm=TRUE)
