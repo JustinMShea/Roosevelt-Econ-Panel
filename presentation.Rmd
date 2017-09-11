@@ -1,35 +1,207 @@
 ---
-title: "Untitled"
+title: "Unemployment too high? Raise the minimum wage!"
 author: "Justin M. Shea"
-date: "September 8, 2017"
+date: "September 12, 2017"
 output: beamer_presentation
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(knitr)
+library(rmarkdown)
+library(xts)
+library(ggplot2)
+library(tufte)
+
+source("functions.R")
 ```
 
-## R Markdown
+## Introduction
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The percentage of people participation in the labor force remains depressed since the Great Recession. So too, does aggregate demand...
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+## Unemployment, headline percentage looks fine
 
-## Slide with Bullets
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+```{r, message=FALSE}
+# Employment Statistics
+Unemployment_url <- "https://fred.stlouisfed.org/data/UNRATE.txt"
 
-## Slide with R Output
+Unemployment <- as.xts(read.zoo(Unemployment_url, skip = 24, index.column = 1, 
+                            header = TRUE, format = "%Y-%m-%d", FUN = as.yearmon))
 
-```{r cars, echo = TRUE}
-summary(cars)
+autoplot(Unemployment["1980/"]) + theme_bw()
+
 ```
 
-## Slide with Plot
+## The labor participation rate, doesn't.
 
-```{r pressure}
-plot(pressure)
+```{r, message=FALSE}
+labor_participation_url <- "https://fred.stlouisfed.org/data/CIVPART.txt"
+
+
+labor_participation <- as.xts(read.zoo(labor_participation_url, skip = 14, index.column = 1, 
+                                   header = TRUE, format = "%Y-%m-%d", FUN = as.yearmon))
+
+autoplot(labor_participation["1980/"]) + theme_bw()
+
 ```
+
+
+## Output gap
+
+```{r, message=FALSE, warning=FALSE}
+Real_GDP_URL <- "https://research.stlouisfed.org/fred2/data/GDPC96.txt"
+Real_GDP <- as.xts(read.zoo(Real_GDP_URL, skip = 12, index.column = 1, 
+                        header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+
+HL_GDP_actual <- HLfilter(Real_GDP, h = 64)
+
+Gap_Percent <- 100 * (sum(HL_GDP_actual["2017"]$HL_resid) / sum(HL_GDP_actual["2017"]$x_h))
+#kable(Gap_Percent)
+
+# log real gdp for plots
+Hlm_GDP <- HLfilter.lm(Real_GDP["/2007"], h = 80)
+HL_GDP <- HLfilter(100*log(Real_GDP), h = 40)
+
+
+# plot GDP
+#plot(HL_GDP$HL_fit, col = "red", grid.col = "white")
+#lines(HL_GDP$x_h, col = "black")
+
+plot(HL_GDP$HL_fit["1984/"], col = "red", grid.col = "white")
+lines(HL_GDP$x_h["1984/"], col = "black")
+```
+
+## Output gap
+```{r, message=FALSE, warning=FALSE}
+# plot resid
+plot(HL_GDP$HL_resid["1956/"], index(employ_hlf), col = "black", grid.col = "white")
+abline(v = .index(HL_GDP["2001"])[1], lty = 2, col = "green")
+abline(v = .index(HL_GDP["2009"])[1], lty = 2, col = "red")
+#abline(h = 415, lty = 2, col = "green")
+abline(h = 0, lty = 2, col = "black")
+#abline(h= -515, lty = 2, col = "red")
+```
+
+
+## Government Spending
+```{r, message = FALSE, warning = FALSE, tidy = TRUE}
+### Government Consumption Expenditures
+                        Federal_GCE <- "https://fred.stlouisfed.org/data/FGCE.txt"
+                    State_Local_GCE <- "https://fred.stlouisfed.org/data/SLCE.txt"
+                    
+## GCE Quantity & Price Indexes
+Federal_Quantity_Index <- "https://fred.stlouisfed.org/data/B823RA3Q086SBEA.txt"
+        Federal_Price_Index <- "https://fred.stlouisfed.org/data/B823RG3Q086SBEA.txt"
+#-------------------------------------#
+State_Local_Quantity_Index <- "https://fred.stlouisfed.org/data/B829RA3Q086SBEA.txt"
+        State_Local_Price_Index <- "https://fred.stlouisfed.org/data/B829RG3Q086SBEA.txt"
+        
+GCE_Table <- t(data.frame(Federal_GCE, Federal_Quantity_Index, Federal_Price_Index, State_Local_GCE, State_Local_Quantity_Index, State_Local_Price_Index))
+#kable(GCE_Table, align = "l", caption = "GCE Nominal, Quantity, and Price index sources.")
+```
+
+```{r, message = FALSE, warning = FALSE, tidy = TRUE}
+Federal          <- as.xts(read.zoo(Federal_GCE, sep = "", skip = 13, 
+                           index.column = 1,  header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+Federal_Quantity <- as.xts(read.zoo(Federal_Quantity_Index, sep = "", skip = 13, 
+                           index.column = 1,  header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+Federal_Price    <- as.xts(read.zoo(Federal_Price_Index  , sep = "", skip = 13, 
+                           index.column = 1,  header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+#------------------------------# 
+State_Local          <- as.xts(read.zoo(State_Local_GCE, sep = "", skip = 13, 
+                              index.column = 1,  header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+State_Local_Quantity <- as.xts(read.zoo(State_Local_Quantity_Index, sep = "", skip = 13, 
+                              index.column = 1,  header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+State_Local_Price    <- as.xts(read.zoo(State_Local_Price_Index  , sep = "", skip = 13, 
+                              index.column = 1,  header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+```
+
+
+```{r message = FALSE, warning = FALSE, tidy = TRUE}
+Real_Federal      <- Fisher(Federal, Federal_Price, Federal_Quantity, 249)
+Real_State_Local  <- Fisher(State_Local, State_Local_Price, State_Local_Quantity, 249)
+```
+
+```{r message = FALSE, warning = FALSE, fig.fullwidth = TRUE, fig.cap = "Real Federal and Local Spending, 1980-Present"}
+library(ggplot2)
+library(RColorLisa)
+
+Government <- merge(Real_Federal, Federal, Real_State_Local, State_Local)
+
+Picasso <- color.lisa.pal(5, "The Dream by Pablo Picasso")
+Basquiat <- color.lisa.pal(4, "DUSTHEADS by Jean-Michel Basquiat")
+vanGogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
+chagall <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
+
+autoplot(Government["1980/"], facets = Series ~., melt=TRUE, ncol=2) +
+        scale_y_continuous(position = "right") +
+        geom_vline(xintercept = c(1990, 1994, 2002, 2010)) +
+        scale_color_manual(values = Picasso) +
+        theme_bw()+ theme(legend.position = "top")
+
+```
+
+```{r}
+# GDP
+GDP_and_Gov <- merge(Real_GDP, Real_Federal, Federal, Real_State_Local, State_Local)
+Government_table <- data.frame(coredata(GDP_and_Gov ["2010/"]))
+rownames(Government_table) <- index(GDP_and_Gov["2010/"]) 
+#kable(Government_table)
+
+
+total_table <- data.frame(sapply(Government_table, function(x) (x[NROW(x)] - x[1])))
+summary_table <- t(total_table)
+rownames(summary_table) <- "Change"
+kable(summary_table)
+```
+
+## Real Government Spending, Percentage of Real GDP
+
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Real Federal Consumption Expenditure: Percentage of Real GDP"}
+Federal_GDP_percent <- 100 * (Real_Federal/Real_GDP)
+
+autoplot(Federal_GDP_percent["1980/"]) +
+        ylab("Federal GCE, % GDP") +
+        xlab("Year") +
+        scale_y_continuous(position = "right") +
+        geom_vline(xintercept = c(1990, 1994, 2002, 2010)) +
+        theme_bw()
+```
+
+
+## What about the Stock Market? A mirage...
+
+
+
+## Raise the Minimum wage
+
+Card and Krueger
+```{r, message = FALSE, warning = FALSE, tidy = TRUE}
+## Card and Krueger
+library(wooldridge)
+data("discrim")
+
+#str(discrim)
+#lm(discrim$emp ~ discrim$wagest)
+#plot(x=discrim$emp, y = discrim$wagest)
+
+ggplot(data=discrim, aes(x=emp, y=wagest)) + 
+        geom_point() +
+        geom_smooth(method = "lm")
+
+ggplot(data=discrim, aes(y=emp2, x=wagest2)) + 
+        geom_point() +
+        facet_grid(. ~ state) +
+        geom_smooth(method = "lm")
+
+
+```
+
+
+
+
+
+
 
