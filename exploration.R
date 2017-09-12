@@ -77,3 +77,11 @@ ggplot(employment_wide, aes(x=date)) +
         geom_line(aes(y=employment_ages_api[4])) +
         geom_line(aes(y=employment_ages_api[5])) +
         labs(title = "Employment Level - Civ. Labor Force")
+
+
+df <- get_bls_county()
+
+#Use map function with arguments.
+map_bls(map_data = df, fill_rate = "unemployed_rate", 
+        labtitle = "Unemployment Rate by County")
+
