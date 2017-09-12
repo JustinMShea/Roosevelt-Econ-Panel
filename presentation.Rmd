@@ -1,5 +1,5 @@
 ---
-title: "Labor Force and the American Dream"
+title: "A Tale of Two Economies"
 author: "Justin M. Shea"
 date: "September 12, 2017"
 output: beamer_presentation
@@ -362,6 +362,30 @@ ggplot(data = SP500_E_chart, aes(y = value, x = date)) +
 
 ```
 
+## S&P 500 Revenue Per Share
+
+
+```{r message = FALSE, warning = FALSE, cache=TRUE}
+
+library(Quandl)
+Quandl.api_key("wzAyVxVa7H7Rj1xZqy6V")
+
+SP500_Sales <- Quandl("MULTPL/SP500_REAL_SALES_QUARTER", type="xts")
+
+SP500_E_chart <- data.frame(date = index(SP500_Sales), value = coredata(SP500_Sales))
+```
+
+```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Real 12-Month S&P 500 Sales Per Share"}
+ggplot(data = SP500_E_chart, aes(y = value, x = date)) +
+        geom_line(color = Picasso[1], size = 1) +
+        scale_y_continuous(position = "right") +
+        xlab("Year") +
+        ylab("Earnings Per Share") +
+        geom_vline(xintercept = c(2008), color = "red", alpha = 2/3, linetype = "dashed") +
+        scale_color_manual(values = Picasso) +
+        theme_tufte(base_size = 16) + theme(legend.position = "top")
+
+```
 
 ## Corporate Profits, Percent of GDP
 
@@ -388,8 +412,8 @@ Corporate_Cash_Flow <-  as.xts(read.zoo(Corporate_Net_Cash_Flow, sep = "", skip 
 
 Corporate_GDP_percent <- 100 * (Corporate_Profits/GDP)
 
-autoplot(Corporate_GDP_percent["1985/"]) +
-        ylab("Corporate Cash Flow, % GDP") +
+autoplot(Corporate_GDP_percent["1960/"]) +
+        ylab("Corporate_Profits, % GDP") +
         xlab("Year") +
         scale_y_continuous(position = "right") +
         geom_vline(xintercept = c(2008)) +
@@ -457,18 +481,27 @@ GDP_Price    <- as.xts(read.zoo(GDP_Price_Index, skip = 14, index.column = 1,
 base_year <- inflation_adjust(base_year=2009)
 
 Real_minimum_wage <- minimum_wage_yr [,4]/base_year$adj_value
+```
 
+```{r}
+colnames(Real_minimum_wage) <- "value"
+
+minimum_wage_chart <- data.frame(date = index(Real_minimum_wage), value = coredata(Real_minimum_wage))
 #Real_minimum_wage <- Fisher(minimum_wage_qtr[,4], GDP_Price, GDP_Quantity, base = 282)
 #Real_minimum_wage
 ```
 
-```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Corporate Cash Flows without profits: Percentage of Real GDP"}
-autoplot(Real_minimum_wage["/2016"]) +
-        ylab("Real minimum wage") +
-        xlab("Year") +
+
+```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Real Minimum Wage, in 2009 Dollars"}
+ggplot(data = minimum_wage_chart, aes(y = value, x = date)) +
+        geom_line(color = Picasso[1], size = 1) +
         scale_y_continuous(position = "right") +
-        geom_vline(xintercept = c(2002, 2010)) +
-        theme_bw()
+        xlab("Year") +
+        ylab("Dollars Per Hour") +
+        geom_vline(xintercept = c(2008), color = "red", alpha = 2/3, linetype = "dashed") +
+        scale_color_manual(values = Picasso) +
+        theme_tufte(base_size = 16) + theme(legend.position = "top")
+
 ```
 
 
