@@ -1,5 +1,5 @@
 ---
-title: "Labor Force Participation"
+title: "Labor Force and the American Dream"
 author: "Justin M. Shea"
 date: "September 12, 2017"
 output: beamer_presentation
@@ -15,69 +15,108 @@ library(blscrapeR)
 library(tidyr)
 library(ggthemes)
 library(tufte)
+library(RColorLisa)
+library(dplyr)
 
 source("functions.R")
+
+library(RColorLisa)
+
+Picasso <- color.lisa.pal(5, "The Dream by Pablo Picasso")
+Basquiat <- color.lisa.pal(4, "DUSTHEADS by Jean-Michel Basquiat")
+vanGogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
+chagall <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
+
 ```
 
 ## Introduction
+```{r, message = FALSE, warning = FALSE, cache = TRUE}
+df <- get_bls_county()
+```
+```{r, message = FALSE, warning = FALSE}
+#Use map function with arguments.
+map_bls(map_data = df, fill_rate = "unemployed_rate", 
+        labtitle = "Unemployment Rate by County")
+```
 
-The percentage of people participating in the labor force remains depressed since the Great Recession. So too, does aggregate demand.
+## Unemployment Rate
 
-## Unemployment, headline percentage looks fine
-
-
-```{r, message=FALSE}
+```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series ID: UNRATE LNS14000000"}
 # Employment Statistics
 Unemployment_url <- "https://fred.stlouisfed.org/data/UNRATE.txt"
 
 Unemployment <- as.xts(read.zoo(Unemployment_url, skip = 24, index.column = 1, 
                             header = TRUE, format = "%Y-%m-%d", FUN = as.yearmon))
 
-autoplot(Unemployment["1980/"]) + theme_bw()
+Unemployment_chart <- data.frame(date = index(Unemployment["1980/"]), value = coredata(Unemployment["1980/"]))
 
+ggplot(data = Unemployment_chart, aes(y = value, x = date)) +
+        geom_line(color = Picasso[1]) +
+        scale_y_continuous(position = "right") +
+        xlab("Year") +
+        ylab("Percent") +
+       geom_vline(xintercept = 2000, alpha = 1/3, linetype = "dashed") +
+        scale_color_manual(values = Picasso) +
+        theme_tufte(base_size = 16) + theme(legend.position = "top")
 ```
 
-## The labor participation rate, doesn't.
+## Labor Force Participation Rate
 
-```{r, message=FALSE}
+```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series ID: CIVPART LNS11300000"}
 labor_participation_url <- "https://fred.stlouisfed.org/data/CIVPART.txt"
-
 
 labor_participation <- as.xts(read.zoo(labor_participation_url, skip = 14, index.column = 1, 
                                    header = TRUE, format = "%Y-%m-%d", FUN = as.yearmon))
 
-autoplot(labor_participation["1980/"]) + theme_bw()
+Participation_chart <- data.frame(date = index(labor_participation["1980/"]), value = coredata(labor_participation["1980/"]))
 
+ggplot(data = Participation_chart, aes(y = value, x = date)) +
+        geom_line(color = Picasso[1]) +
+        scale_y_continuous(position = "right") +
+        xlab("Year") +
+         ylab("Percent") +
+        #geom_vline(xintercept = c(1990, 1994, 2002, 2010), alpha = 1/3, linetype = "dashed") +
+        scale_color_manual(values = Picasso) +
+        theme_tufte(base_size = 16) + theme(legend.position = "top")
 ```
 
 ## The labor participation rate, by age
 
-```{r}
+```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series ID: CIVPART LNS11300000"}
 #bls data by ages
 library(blscrapeR)
-library(tidyr)
-library(tufte)
 
 employment_series <- c("LNS11324230", "LNS11300093", "LNS11300091", "LNS11300089", "LNS11324887" )
-
 labels <- c("55 and over", "45 to 55", "35 to 44", "25 to 34", "16 to 24")
 
-employment_ages <- bls_api(employment_series, startyear = 2000, endyear = 2017, registrationKey = Sys.getenv("BLS_KEY")) %>% 
+employment_ages <- bls_api(employment_series, startyear = 1997, end = 2017, registrationKey = Sys.getenv("BLS_KEY")) %>% 
         dateCast()
 
-employment_wide <- employment_ages %>% spread(seriesID, value)
+employment_wide <- employment_ages %>% spread(seriesID, value) %>% select(5:10) %>%
+        arrange(date)
+        
+employment_diff <- apply(employment_wide[,2:6], 2, diff)
 
-  ggplot(employment_wide, aes(x=date)) +
-        geom_line(aes(y=LNS11324230)) +
-        geom_line(aes(y=LNS11300093)) +
-        geom_line(aes(y=LNS11300091)) +
-        geom_line(aes(y=LNS11300089)) +
-        geom_line(aes(y=LNS11324887)) +
-        theme_bw()
+employment_sum <- apply(employment_diff, 2, cumsum)
+
+employment_final <- data.frame(employment_wide[-1,"date"], employment_sum) %>%
+         rename("55 and over"=LNS11324230, "45 to 55" = LNS11300093, "35 to 44" = LNS11300091,
+                "25 to 34" = LNS11300089, "16 to 24" = LNS11324887)
+        
+employment_long <- gather(employment_final, "age", "percent", 2:6)
+
+  ggplot(employment_long, aes(x=date, y=percent)) +
+        geom_line(aes(colour = age), size = 1) +
+        scale_y_continuous(position = "right") +
+        xlab("Year") +
+         ylab("Percent") +
+        geom_hline(yintercept = 0, alpha = 2/3, linetype = "dashed") +
+        scale_color_manual(values = Picasso) +
+        theme_tufte(base_size = 16) + theme(legend.position = "top")
 
 ```
 
-## Output gap
+## Perhaps it's the output gap
 
 ```{r, message=FALSE, warning=FALSE}
 Real_GDP_URL <- "https://research.stlouisfed.org/fred2/data/GDPC96.txt"
@@ -153,22 +192,23 @@ Real_Federal      <- Fisher(Federal, Federal_Price, Federal_Quantity, 249)
 Real_State_Local  <- Fisher(State_Local, State_Local_Price, State_Local_Quantity, 249)
 ```
 
-```{r message = FALSE, warning = FALSE, fig.fullwidth = TRUE, fig.cap = "Real Federal and Local Spending, 1980-Present"}
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Real Federal and Local Spending, 1980-Present"}
 library(ggplot2)
 library(RColorLisa)
 
-Government <- merge(Real_Federal, Federal, Real_State_Local, State_Local)
+Government <- merge(Real_Federal,Real_State_Local)
 
 Picasso <- color.lisa.pal(5, "The Dream by Pablo Picasso")
 Basquiat <- color.lisa.pal(4, "DUSTHEADS by Jean-Michel Basquiat")
 vanGogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
 chagall <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
 
-autoplot(Government["1980/"], facets = Series ~., melt=TRUE, ncol=2) +
+autoplot(Government["1980/"], facets = Series ~., melt=TRUE) +
         scale_y_continuous(position = "right") +
-        geom_vline(xintercept = c(1990, 1994, 2002, 2010)) +
+        xlab("Year") +
+        geom_vline(xintercept = c(1990, 1994, 2002, 2010), alpha = 1/3, linetype = "dashed") +
         scale_color_manual(values = Picasso) +
-        theme_bw()+ theme(legend.position = "top")
+        theme_tufte() + theme(legend.position = "top")
 
 ```
 
@@ -182,8 +222,8 @@ rownames(Government_table) <- index(GDP_and_Gov["2010/"])
 
 total_table <- data.frame(sapply(Government_table, function(x) (x[NROW(x)] - x[1])))
 summary_table <- t(total_table)
-rownames(summary_table) <- "Change"
-kable(summary_table)
+rownames(summary_table) <- "Change from 2010"
+#kable(summary_table)
 ```
 
 ## Real Government Spending, Percentage of Real GDP
@@ -198,6 +238,9 @@ autoplot(Federal_GDP_percent["1980/"]) +
         geom_vline(xintercept = c(1990, 1994, 2002, 2010)) +
         theme_bw()
 ```
+
+## Isn't the stock market doing well?
+
 
 
 ## Corporate Profits, Percentage of Real GDP
@@ -223,17 +266,19 @@ Corporate_Cash_Flow <-  as.xts(read.zoo(Corporate_Net_Cash_Flow, sep = "", skip 
                            index.column = 1,  header = TRUE, format = "%Y-%m-%d", 
                            FUN = as.yearqtr))     
 
-Corporate_GDP_percent <- 100 * (Corporate_Profits/GDP)
+Corporate_GDP_percent <- 100 * (Corporate_Cash_Flow/GDP)
 
 autoplot(Corporate_GDP_percent["2000/"]) +
-        ylab("Corporate Profits, % GDP") +
+        ylab("Corporate Cash Flow, % GDP") +
         xlab("Year") +
         scale_y_continuous(position = "right") +
-        geom_vline(xintercept = c(2002, 2010)) +
+        geom_vline(xintercept = c(2008)) +
         theme_bw()
 ```
 
-```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Real Federal Consumption Expenditure: Percentage of Real GDP"}
+## Percentage of Corporate Cash Flows, Not Profits
+
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Corporate Profits: Percentage of Corporate Cash Flow"}
 
 Corporate_Net_Cash_Flow     <- "https://fred.stlouisfed.org/data/CNCF.txt"
 
@@ -248,24 +293,38 @@ autoplot(Corp_Cash_GDP_percent["1982/"]) +
         ylab("Corporate Profits, % of Corporate Cash Flow") +
         xlab("Year") +
         scale_y_continuous(position = "right") +
-        geom_vline(xintercept = c(1990, 1994, 2002, 2010)) +
+        geom_vline(xintercept = c(2008)) +
         theme_bw()
 
 ```
 
-```{r}
+
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Corporate Cash Flows without profits: Percentage of Real GDP"}
+cash_profit <- 100 * (Corporate_Cash_Flow-Corporate_Profits)/GDP
+
+autoplot(cash_profit["1982/"]) +
+        ylab("Corporate Profits, % of Corporate Cash Flow") +
+        xlab("Year") +
+        scale_y_continuous(position = "right") +
+        geom_vline(xintercept = c(2008)) +
+        theme_bw()
+
+```
+
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "S&P 500 Earnings Per Share, Percent from New Sales"}
 
 library(Quandl)
+Quandl.api_key("wzAyVxVa7H7Rj1xZqy6V")
 SP500_Sales <- Quandl("MULTPL/SP500_REAL_SALES_YEAR", type="xts")
 SP500_Earnings <- Quandl("MULTPL/SP500_EARNINGS_YEAR", type="xts")
 
-SP500_Profit <- 100 * (SP500_Earnings-SP500_Sales)
+SP500_Profit <- (SP500_Sales-SP500_Earnings)/SP500_Earnings
 
-autoplot(SP500_Sales) +
-        ylab("S&P 500 Sales Per share") +
+autoplot(SP500_Profit["2000/"]) +
+        ylab("Earnings, % New Sales Per share") +
         xlab("Year") +
         scale_y_continuous(position = "right") +
-        geom_vline(xintercept = c(2002, 2010)) +
+        geom_smooth(method = "lm") +
         theme_bw()
 ```
 
@@ -273,9 +332,49 @@ autoplot(SP500_Sales) +
 
 
 
-## Raise the Minimum wage
+## Minimum wage
 
-Card and Krueger
+```{r, message = FALSE, warning = FALSE, cache = TRUE}
+
+minimum_oath <- "https://fred.stlouisfed.org/data/FEDMINNFRWG.txt"
+minimum_wage <-  as.xts(read.zoo(minimum_oath, sep = "", skip = 26, 
+                           index.column = 1,  header = TRUE, format = "%Y-%m-%d", FUN = as.yearmon)) 
+
+minimum_wage_qtr <- to.quarterly(minimum_wage)["1947/"]
+
+minimum_wage_yr <- to.yearly(minimum_wage)["1947/"]
+
+GDP_Quantity_Index <- "https://fred.stlouisfed.org/data/A191RA3Q086SBEA.txt"
+GDP_Price_Index <- "https://fred.stlouisfed.org/data/A191RG3Q086SBEA.txt"
+# Get data
+GDP_Quantity <- as.xts(read.zoo(GDP_Quantity_Index, skip = 14, index.column = 1, 
+                        header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+GDP_Price    <- as.xts(read.zoo(GDP_Price_Index, skip = 14, index.column = 1, 
+                             header = TRUE, format = "%Y-%m-%d", FUN = as.yearqtr))
+
+base_year <- inflation_adjust(base_year=2009)
+
+Real_minimum_wage <- minimum_wage_yr [,4]/base_year$adj_value
+
+#Real_minimum_wage <- Fisher(minimum_wage_qtr[,4], GDP_Price, GDP_Quantity, base = 282)
+#Real_minimum_wage
+```
+
+```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Corporate Cash Flows without profits: Percentage of Real GDP"}
+autoplot(Real_minimum_wage["/2016"]) +
+        ylab("Real minimum wage") +
+        xlab("Year") +
+        scale_y_continuous(position = "right") +
+        geom_vline(xintercept = c(2002, 2010)) +
+        theme_bw()
+```
+
+
+
+
+
+## Card and Krueger
+
 ```{r, message = FALSE, warning = FALSE, tidy = TRUE}
 ## Card and Krueger
 library(wooldridge)
@@ -293,6 +392,7 @@ ggplot(data=discrim, aes(y=emp2, x=wagest2)) +
         geom_point() +
         facet_grid(. ~ state) +
         geom_smooth(method = "lm")
+
 
 ```
 
