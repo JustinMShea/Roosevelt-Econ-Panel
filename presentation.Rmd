@@ -24,8 +24,8 @@ library(RColorLisa)
 
 Picasso <- color.lisa.pal(5, "The Dream by Pablo Picasso")
 Basquiat <- color.lisa.pal(4, "DUSTHEADS by Jean-Michel Basquiat")
-vanGogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
-chagall <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
+vangogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
+Basquiat <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
 
 ```
 
@@ -387,10 +387,8 @@ ggplot(data = SP500_E_chart, aes(y = value, x = date)) +
 
 ```
 
-## Corporate Profits, Percent of GDP
 
-
-```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series ID: CP,  BEA Code: A055RC1"}
+```{r, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series ID: CP,  BEA Code: A055RC1"}
 
 GDP_nom <- "https://fred.stlouisfed.org/data/GDP.txt"
 GDP          <- as.xts(read.zoo(GDP_nom, skip = 19, index.column = 1, header = TRUE, 
@@ -412,17 +410,17 @@ Corporate_Cash_Flow <-  as.xts(read.zoo(Corporate_Net_Cash_Flow, sep = "", skip 
 
 Corporate_GDP_percent <- 100 * (Corporate_Profits/GDP)
 
-autoplot(Corporate_GDP_percent["1960/"]) +
-        ylab("Corporate_Profits, % GDP") +
-        xlab("Year") +
-        scale_y_continuous(position = "right") +
-        geom_vline(xintercept = c(2008)) +
-        theme_tufte()
+#autoplot(Corporate_GDP_percent["1960/"]) +
+ #       ylab("Corporate_Profits, % GDP") +
+  #      xlab("Year") +
+   #     scale_y_continuous(position = "right") +
+    #    geom_vline(xintercept = c(2008)) +
+     #   theme_tufte()
 ```
 
-## Corporate Profits, Percentage of Cash Flows
+## Corporate Profits, Percentage of Cash Flow
 
-```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Corporate Profits: Percentage of Corporate Cash Flow"}
+```{r, message = FALSE, warning = FALSE}
 
 Corporate_Net_Cash_Flow     <- "https://fred.stlouisfed.org/data/CNCF.txt"
 
@@ -433,17 +431,24 @@ Corporate_Cash_Flow <-  as.xts(read.zoo(Corporate_Net_Cash_Flow, sep = "", skip 
 
 Corp_Cash_GDP_percent <- 100 * (Corporate_Profits/Corporate_Cash_Flow)
 
-autoplot(Corp_Cash_GDP_percent["1982/"]) +
-        ylab("Corporate Profits, % of Corporate Cash Flow") +
-        xlab("Year") +
+Corp_Cash_GDP_chart <- data.frame(date = index(Corp_Cash_GDP_percent["1982/"]), value = coredata(Corp_Cash_GDP_percent["1982/"]))
+```
+
+```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series: CP & CNCF"}
+ggplot(data = Corp_Cash_GDP_chart, aes(y = value, x = date)) +
+        geom_line(color = Picasso[1], size = 1) +
         scale_y_continuous(position = "right") +
-        geom_vline(xintercept = c(2008)) +
-        theme_bw()
+        xlab("Year") +
+        ylab("Corporate Profits, % of Corporate Cash Flow") +
+        geom_vline(xintercept = c(2008), color = "red", alpha = 2/3, linetype = "dashed") +
+        scale_color_manual(values = Picasso) +
+        theme_tufte(base_size = 16) + theme(legend.position = "top")
 
 ```
 
 
-```{r message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Corporate Cash Flows without profits: Percentage of Real GDP"}
+
+```{r, eval=FALSE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.fullwidth = TRUE, fig.cap = "Corporate Cash Flows without profits: Percentage of Real GDP"}
 cash_profit <- 100 * (Corporate_Cash_Flow-Corporate_Profits)/GDP
 
 autoplot(cash_profit["1982/"]) +
@@ -458,7 +463,7 @@ autoplot(cash_profit["1982/"]) +
 
 
 
-## Minimum wage
+## Real Minimum Wage, in 2009 Dollars
 
 ```{r, message = FALSE, warning = FALSE, cache = TRUE}
 
@@ -492,13 +497,13 @@ minimum_wage_chart <- data.frame(date = index(Real_minimum_wage), value = coreda
 ```
 
 
-```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Real Minimum Wage, in 2009 Dollars"}
+```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series: FEDMINNFRWG"}
 ggplot(data = minimum_wage_chart, aes(y = value, x = date)) +
         geom_line(color = Picasso[1], size = 1) +
         scale_y_continuous(position = "right") +
         xlab("Year") +
         ylab("Dollars Per Hour") +
-        geom_vline(xintercept = c(2008), color = "red", alpha = 2/3, linetype = "dashed") +
+        geom_vline(xintercept = c(1969, 2009), color = "red", alpha = 2/3, linetype = "dashed") +
         scale_color_manual(values = Picasso) +
         theme_tufte(base_size = 16) + theme(legend.position = "top")
 
@@ -508,13 +513,14 @@ ggplot(data = minimum_wage_chart, aes(y = value, x = date)) +
 
 
 
-## Card and Krueger
+## Card and Krueger: Minimum Wages and Employment
 
 ```{r, message = FALSE, warning = FALSE, tidy = TRUE}
 ## Card and Krueger
 library(wooldridge)
 data("discrim")
 
+discrim$NewJersey <- as.factor(discrim$NJ)
 #str(discrim)
 #lm(discrim$emp ~ discrim$wagest)
 #plot(x=discrim$emp, y = discrim$wagest)
@@ -523,20 +529,33 @@ data("discrim")
   #      geom_point() +
    #     geom_smooth(method = "lm")
 
-ggplot(data=discrim, aes(x=emp, y=wagest, col = NJ)) + 
-        geom_point() +
-        theme_bw()
-
-ggplot(data=discrim, aes(x=emp2, y=wagest2, col = NJ)) + 
-        geom_point() +
-        theme_bw()
-
+ggplot(data=discrim, aes(x=emp, y=wagest, col = NewJersey)) + 
+        geom_count(aes(size = ..prop.., group = NewJersey), alpha = 1/3) +
+        scale_size_area(max_size = 10) +
+        xlab("Number of Employees") +
+        ylab("Starting Wage, Dollars") +
+        ggtitle("February 1992 - Pre Minimum Wage Increase") + 
+        scale_color_manual(values = Picasso) +
+        theme_bw(base_size = 16) 
 
 ```
 
+## Card and Krueger: Minimum Wages and Employment 2
 
 
+```{r, message = FALSE, warning = FALSE, tidy = TRUE}
 
+ggplot(data=discrim, aes(x=emp2, y=wagest2, col = NewJersey)) + 
+         geom_count(aes(size = ..prop.., group = NewJersey), alpha = 1/3) +
+        scale_size_area(max_size = 10) +
+        xlab("Number of Employees") +
+        ylab("Starting Wage, Dollars") +
+        ggtitle("November 1992 - Post Minimum Wage Increase") + 
+        scale_color_manual(values = Picasso) +
+        theme_bw(base_size = 16)
+
+
+```
 
 
 
