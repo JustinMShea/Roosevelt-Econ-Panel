@@ -156,7 +156,7 @@ ggplot(data = Income_chart, aes(y = value, x = date)) +
         theme_tufte(base_size = 16) + theme(legend.position = "top")
 ```
 
-## The Economy is lagging behind its potential
+## The Economy seems to be lagging behind its potential
 
 ```{r message = FALSE, warning = FALSE}
 Real_GDP_URL <- "https://fred.stlouisfed.org/data/A939RX0Q048SBEA.txt"
@@ -180,9 +180,7 @@ HL_output <- data.frame(index(HL_output_xts), coredata(HL_output_xts))
 colnames(HL_output) <- c("date", "Actual", "Potential")
 
 HL_long <- gather(HL_output, "Series", "Dollars", 2:3)
-# plot GDP
-#plot(HL_GDP$HL_fit, col = "red", grid.col = "white")
-#lines(HL_GDP$x_h, col = "black")
+
 ```
 
 ```{r message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, fig.fullwidth = TRUE, fig.cap = "Series ID: A939RX0Q048SBEA, BEA Account Code: A939RX0"}
@@ -191,7 +189,7 @@ HL_long <- gather(HL_output, "Series", "Dollars", 2:3)
         scale_y_continuous(position = "right") +
          xlab("Year") +
          ylab("2009 Dollars") +
-         labs(subtitle = "Potential Computed by Hamilton-Leff Approach") + 
+         labs(subtitle = "Potential GDP Per Capita inspired by Hamilton-Leff filter") + 
         geom_vline(xintercept = 2008.75, alpha = 2/3, linetype = "dashed") +
         scale_color_manual(values = Picasso) +
         theme_tufte(base_size = 16) + theme(legend.position = "top")
