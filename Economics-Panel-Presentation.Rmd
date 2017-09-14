@@ -5,7 +5,7 @@ date: "September 12, 2017"
 output: beamer_presentation
 ---
 
-```{r setup, include=FALSE}
+```{r, setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
 ## R packages used
@@ -13,26 +13,24 @@ library(knitr)
 library(rmarkdown)
 library(xts)
 library(ggplot2)
-library(blscrapeR)
-library(tidyr)
 library(ggthemes)
 library(tufte)
 library(RColorLisa)
+library(blscrapeR)
+library(tidyr)
 library(dplyr)
 
 # functions for the Real tranforms and Output Gap computation here
-source("functions.R")
+source("R/functions.R")
 
 # chart color pallettes
-library(RColorLisa)
 Picasso <- color.lisa.pal(5, "The Dream by Pablo Picasso")
 Basquiat <- color.lisa.pal(4, "DUSTHEADS by Jean-Michel Basquiat")
 vangogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
 Basquiat <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
-
 ```
 
-## The Headline Unemployment Rate looks
+## The Headline Unemployment Rate looks good
 ```{r, message = FALSE, warning = FALSE, cache = TRUE}
 
 unemployment_county <- get_bls_county()
