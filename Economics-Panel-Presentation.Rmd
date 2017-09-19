@@ -23,11 +23,11 @@ library(dplyr)
 # functions for the Real tranforms and Output Gap computation here
 source("R/functions.R")
 
-# chart color pallettes
+# chart color palletes
 Picasso <- color.lisa.pal(5, "The Dream by Pablo Picasso")
 Basquiat <- color.lisa.pal(4, "DUSTHEADS by Jean-Michel Basquiat")
-vangogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
-Basquiat <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
+vanGogh <- color.lisa.pal(4, "The Starry Night by Vincent van Gogh")
+Chagall <- color.lisa.pal(4, "La MariÃ©e sous le Baldaquin by Marc Chagall")
 ```
 
 ## The Headline Unemployment Rate looks good
@@ -517,10 +517,6 @@ discrim$NewJersey <- as.factor(discrim$NJ)
 #str(discrim)
 #lm(discrim$emp ~ discrim$wagest)
 #plot(x=discrim$emp, y = discrim$wagest)
-
-#ggplot(data=discrim, aes(x=emp, y=wagest)) + 
-  #      geom_point() +
-   #     geom_smooth(method = "lm")
 
 ggplot(data=discrim, aes(x=emp, y=wagest, col = NewJersey)) + 
         geom_count(aes(size = ..prop.., group = NewJersey), alpha = 1/3) +
