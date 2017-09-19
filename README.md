@@ -1,4 +1,4 @@
-# Roosevelt Panel Discussion on Economics and the American Dream 
+# Roosevelt Panel: Economics and the American Dream 
 
 From the program brochure:
 
