@@ -169,7 +169,7 @@ Gap_Percent <- 100 * (sum(HL_GDP_actual["2017"]$HL_resid) / sum(HL_GDP_actual["2
 #kable(Gap_Percent)
 
 # log real gdp for plots
-Hlm_GDP <- HLfilter.lm(Real_GDP["/2007"], h = 40)
+#Hlm_GDP <- HLfilter.lm(Real_GDP["/2007"], h = 40)
 HL_GDP <- HLfilter(Real_GDP, h = 40)
 
 Potential <- HL_GDP$HL_fit["2008-10/"]
@@ -553,11 +553,11 @@ ggplot(data=discrim, aes(x=emp2, y=wagest2, col = NewJersey)) +
 
 I welcome collaborative comments and critiques. Data and code are available to reproduce these slides.
 
-[\textcolor{blue}{Github Repository}](https://github.com/JustinMShea)
+[\textcolor{blue}{Github Repository}](https://github.com/JustinMShea/Roosevelt-Econ-Panel)
 
 
 ```{r, out.width = "90%"}
-image_path <- paste0(path.expand("~/R/ruAmericanDream/image/Github_image.png"))
+image_path <- paste0(path.expand("~/R/Roosevelt-Econ-Panel/image/Github_image.png"))
 include_graphics(image_path)
 
 ```
